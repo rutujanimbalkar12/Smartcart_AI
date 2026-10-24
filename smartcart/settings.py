@@ -71,6 +71,15 @@ if os.getenv('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600, ssl_require=True),
     }
+elif os.getenv('VERCEL'):
+    # Vercel's build environment does not provide the local MySQL driver.
+    # Configure DATABASE_URL in Vercel for a persistent production database.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 else:
     DATABASES = {
         'default': {
