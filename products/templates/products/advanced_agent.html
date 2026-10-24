@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced SmartCart AI Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 800px;">
+        <div class="d-flex align-items-center mb-3">
+            <span class="sc-kicker me-2">AI SYSTEM</span>
+            <div>
+                <h2 class="mb-0">Version 5.0 — Advanced SmartCart AI Agent</h2>
+                <p class="text-muted mb-0">Unified end-to-end shopping automation combining recipes, budgets, and store comparisons.</p>
+            </div>
+        </div>
+
+        <form method="GET" class="card shadow-sm p-4 bg-white mb-4">
+            <label class="form-label text-muted small fw-bold">AI Assistant Prompt</label>
+            <div class="input-group">
+                <input type="text" name="prompt" class="form-control" value="{{ prompt }}">
+                <button class="btn btn-primary px-4" type="submit">Run AI Agent</button>
+            </div>
+        </form>
+
+        <!-- Workflow Execution Steps Visualizer -->
+        <div class="card shadow-sm p-4 bg-white mb-4">
+            <h5 class="text-primary mb-3">⚡ Agent Workflow Execution Pipeline</h5>
+            <div class="d-flex flex-wrap gap-2 text-center small">
+                <span class="badge bg-secondary p-2">1. User Request</span> →
+                <span class="badge bg-secondary p-2">2. AI Intent Parse</span> →
+                <span class="badge bg-secondary p-2">3. Requirements</span> →
+                <span class="badge bg-secondary p-2">4. Product Search</span> →
+                <span class="badge bg-secondary p-2">5. Inventory Check</span> →
+                <span class="badge bg-secondary p-2">6. Store Compare</span> →
+                <span class="badge bg-secondary p-2">7. Discounts</span> →
+                <span class="badge bg-success p-2">8. Optimized Plan</span>
+            </div>
+        </div>
+
+        <!-- Result Summary -->
+        <div class="card shadow-sm p-4 bg-white border-start border-4 border-success">
+            <h4 class="text-success mb-3">Recommended Shopping Plan</h4>
+            
+            <div class="row text-center mb-4 g-3">
+                <div class="col-6 col-md-3">
+                    <span class="text-muted small">Cheapest Store</span>
+                    <h5 class="text-primary mb-0">{{ store_name }}</h5>
+                </div>
+                <div class="col-6 col-md-3">
+                    <span class="text-muted small">Total Cost</span>
+                    <h5 class="text-danger mb-0">₹{{ total_cost|floatformat:2 }}</h5>
+                </div>
+                <div class="col-6 col-md-3">
+                    <span class="text-muted small">Target Budget</span>
+                    <h5 class="text-secondary mb-0">₹{{ budget|floatformat:2 }}</h5>
+                </div>
+                <div class="col-6 col-md-3">
+                    <span class="text-muted small">Remaining</span>
+                    <h5 class="text-success mb-0">₹{{ remaining|floatformat:2 }}</h5>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between p-3 bg-light rounded mb-3">
+                <span>Ingredients Available: <strong>{{ items_available }}</strong></span>
+                <span class="text-success">Estimated Total Savings: <strong>₹{{ estimated_savings|floatformat:2 }}</strong></span>
+            </div>
+
+            <h5 class="text-primary mb-3">📦 Optimized Cart Items:</h5>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Item</th>
+                        <th>Store</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Discount Applied</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in shopping_items %}
+                        <tr>
+                            <td><strong>{{ item.name }}</strong></td>
+                            <td>{{ item.store }}</td>
+                            <td class="text-end">₹{{ item.price }}</td>
+                            <td class="text-end text-success">-₹{{ item.discount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

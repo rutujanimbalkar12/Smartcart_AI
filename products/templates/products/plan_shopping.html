@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Shopping Planner - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 900px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <p class="sc-kicker mb-1">SMART BUDGET PLANNING</p>
+                <h2 class="mb-1">Weekly Grocery Planner</h2>
+                <p class="text-muted">AI-assisted budget distribution across grocery categories based on your household needs.</p>
+            </div>
+            <a href="{% url 'list_management' %}" class="btn btn-outline-primary btn-sm">My Shopping Lists</a>
+        </div>
+
+        <!-- AI Prompt Card -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <form method="GET" class="mb-3">
+                    <label class="form-label fw-bold text-dark mb-2">Describe your household budget or weekly goal:</label>
+                    <div class="input-group">
+                        <input type="text" name="prompt" class="form-control form-control-lg fs-6" value="{{ prompt }}" placeholder="e.g. I have ₹3,000. Plan groceries for a family of 4 for one week.">
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Generate Plan</button>
+                    </div>
+                </form>
+
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <span class="small text-muted fw-semibold">Quick Prompts:</span>
+                    <a href="?prompt=I+have+₹3,000.+Plan+groceries+for+a+family+of+4+for+one+week." class="badge bg-light text-dark border text-decoration-none py-2 px-3">Family of 4 (₹3,000)</a>
+                    <a href="?prompt=I+have+₹1,500.+Plan+budget+groceries+for+1+person+for+one+week." class="badge bg-light text-dark border text-decoration-none py-2 px-3">Solo / Student (₹1,500)</a>
+                    <a href="?prompt=I+have+₹5,000.+Plan+healthy+protein-rich+groceries+for+a+family+of+5." class="badge bg-light text-dark border text-decoration-none py-2 px-3">Family of 5 (₹5,000)</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary KPI Cards -->
+        <div class="row g-3 mb-4 text-center">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100 p-3 bg-white">
+                    <div class="text-muted small text-uppercase fw-semibold">Total Target Budget</div>
+                    <div class="fs-3 fw-bold text-dark mt-1">₹{{ total_budget|floatformat:2 }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100 p-3 bg-white">
+                    <div class="text-muted small text-uppercase fw-semibold">Total Allocated</div>
+                    <div class="fs-3 fw-bold text-primary mt-1">₹{{ total_allocated_sum|floatformat:2 }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100 p-3 bg-white">
+                    <div class="text-muted small text-uppercase fw-semibold">Remaining Buffer</div>
+                    <div class="fs-3 fw-bold mt-1 {% if remaining < 0 %}text-danger{% else %}text-success{% endif %}">
+                        ₹{{ remaining|floatformat:2 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Status Message -->
+        {% if remaining < 0 %}
+            <div class="alert alert-danger shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+                <span>⚠️</span>
+                <div>
+                    <strong>Over Budget:</strong> You have allocated ₹{{ total_allocated_sum|floatformat:0 }}, which exceeds your target by ₹{{ remaining|floatformat:0|slice:"1:" }}. Adjust the category sliders below to balance your budget.
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-success shadow-sm d-flex align-items-center gap-2 mb-4" role="alert">
+                <span>✅</span>
+                <div>
+                    <strong>Balanced Allocation:</strong> You have ₹{{ remaining|floatformat:2 }} remaining in your weekly buffer.
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Category Allocator Form -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Category Spending Allocation</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-4">
+                        {% for cat in categories %}
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded-3 bg-light">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label for="cat_{{ cat.name }}" class="fw-bold mb-0 text-dark">{{ cat.name }}</label>
+                                        <div class="input-group input-group-sm" style="width: 140px;">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" step="10" name="cat_{{ cat.name }}" id="cat_{{ cat.name }}" class="form-control text-end fw-semibold" value="{{ cat.allocated|floatformat:0 }}">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Recommended: {{ cat.name }} essentials for the week</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Recalculate Budget</button>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">Browse Catalog</a>
+                            <a href="{% url 'list_management' %}" class="btn btn-success">Convert to Shopping List</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sample Weekly Item Suggestions -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Recommended Weekly Grocery Basket</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                        <div>
+                            <strong>Grains & Flours</strong>
+                            <p class="text-muted small mb-0">Basmati / Sona Masoori Rice (5kg), Whole Wheat Atta (5kg)</p>
+                        </div>
+                        <span class="badge bg-primary fs-6">₹700</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                        <div>
+                            <strong>Fresh Vegetables</strong>
+                            <p class="text-muted small mb-0">Potatoes (2kg), Onions (2kg), Tomatoes (2kg), Leafy Greens & Carrots</p>
+                        </div>
+                        <span class="badge bg-primary fs-6">₹500</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                        <div>
+                            <strong>Dairy & Eggs</strong>
+                            <p class="text-muted small mb-0">Fresh Milk (7L weekly), Curd (1kg), Paneer (200g)</p>
+                        </div>
+                        <span class="badge bg-primary fs-6">₹400</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                        <div>
+                            <strong>Pulses & Lentils</strong>
+                            <p class="text-muted small mb-0">Toor Dal (1kg), Moong Dal (500g), Chana Dal (500g)</p>
+                        </div>
+                        <span class="badge bg-primary fs-6">₹500</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                        <div>
+                            <strong>Seasonal Fruits</strong>
+                            <p class="text-muted small mb-0">Bananas (1 dozen), Apples (1kg), Oranges</p>
+                        </div>
+                        <span class="badge bg-primary fs-6">₹400</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

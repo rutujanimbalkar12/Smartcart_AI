@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Store Locator - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+
+    <div class="container my-4">
+        <h2 class="mb-4">Stores Near Me</h2>
+        
+        <form method="GET" class="input-group mb-4">
+            <input type="text" name="q" class="form-control" placeholder="Search store name..." value="{{ query }}">
+            <button class="btn btn-primary" type="submit">Search Stores</button>
+        </form>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for item in store_data %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h4 class="card-title text-primary">{{ item.store.name }}</h4>
+                                <span class="badge bg-success">{{ item.store.distance_km }} km away</span>
+                            </div>
+                            <p class="text-muted small mb-1"><strong>Address:</strong> {{ item.store.address|default:"Location address available on map" }}</p>
+                            <p class="text-muted small mb-3"><strong>Opening Hours:</strong> 🕒 {{ item.store.opening_hours }}</p>
+                            
+                            <hr>
+                            <h6 class="text-secondary">Available Products & Offers:</h6>
+                            <ul class="list-group list-group-flush small mb-3" style="max-height: 150px; overflow-y: auto;">
+                                {% for product in item.products %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                        <span>{{ product.name }}</span>
+                                        <div>
+                                            <strong class="text-success me-2">₹{{ product.get_final_price }}</strong>
+                                            {% if product.offer_type != 'NONE' %}
+                                                <span class="badge bg-danger">Offer</span>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-muted bg-transparent">No inventory loaded for this store yet.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <form method="POST" action="{% url 'store_selection' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="store_id" value="{{ item.store.id }}">
+                                <button type="submit" class="btn btn-outline-primary w-100 btn-sm">Select This Store</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-warning">No participating stores found nearby matching your search.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

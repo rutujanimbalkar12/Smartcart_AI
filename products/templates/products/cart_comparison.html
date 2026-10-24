@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Complete Cart Comparison - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="container my-5">
+        <h2 class="mb-3">Complete Shopping List Comparison</h2>
+        <p class="text-muted">Items in cart: 
+            {% for item in cart_items %}
+                <span class="badge bg-secondary">{{ item }}</span>
+            {% endfor %}
+        </p>
+
+        {% if best_store %}
+            <div class="alert alert-success fs-5" role="alert">
+                <strong>{{ best_store }}</strong> can save you up to <strong>₹{{ savings }}</strong> on your complete basket!
+            </div>
+        {% endif %}
+
+        <table class="table table-striped table-hover bg-white shadow-sm rounded">
+            <thead class="table-primary">
+                <tr>
+                    <th>Store</th>
+                    <th>Basket Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in store_totals %}
+                    <tr {% if entry.store_name == best_store %}class="table-success fw-bold"{% endif %}>
+                        <td>{{ entry.store_name }}</td>
+                        <td>₹{{ entry.total|floatformat:2 }}</td>
+                        <td>
+                            {% if entry.available %}
+                                <span class="text-success">✅ All items available</span>
+                            {% else %}
+                                <span class="text-warning">⚠️ Some items substituted/missing</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">No store totals available. Check your product inventory.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <a href="{% url 'product_list' %}" class="btn btn-primary">Back to Products</a>
+            <a href="{% url 'price_comparison' %}" class="btn btn-outline-secondary">Compare Individual Items</a>
+        </div>
+    </div>
+</body>
+</html>

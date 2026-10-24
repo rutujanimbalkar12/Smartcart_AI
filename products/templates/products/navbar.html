@@ -1,0 +1,75 @@
+<nav class="navbar navbar-dark bg-primary px-4 py-3 shadow-sm sc-navbar">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center gap-3 sc-brand-group">
+            <a class="navbar-brand fw-bold fs-4 sc-brand" href="{% url 'product_list' %}">
+                <span class="sc-brand-mark">S</span>
+                <span>SmartCart <small>AI</small></span>
+            </a>
+            {% if selected_store %}
+                <span class="sc-store-context d-none d-md-inline">
+                    <span>Active store</span><strong>{{ selected_store.name }}</strong>
+                </span>
+            {% endif %}
+        </div>
+        
+        <div class="d-flex align-items-center gap-2 flex-wrap sc-nav-actions">
+            <div class="dropdown">
+                <button class="btn btn-warning btn-sm fw-bold dropdown-toggle sc-nav-button" type="button" data-bs-toggle="dropdown">
+                    Intelligence
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{% url 'ai_assistant' %}">AI Recipe Assistant</a></li>
+                    <li><a class="dropdown-item" href="{% url 'advanced_agent' %}">AI Agent v5.0 (Unified)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'budget_optimizer' %}">Budget Optimizer</a></li>
+                    <li><a class="dropdown-item" href="{% url 'budget_view' %}">My Budget</a></li>
+                    <li><a class="dropdown-item" href="{% url 'plan_shopping' %}">Weekly Shopping Planner</a></li>
+                    <li><a class="dropdown-item" href="{% url 'smart_recommendations' %}">Smart Prompts & Alerts</a></li>
+                    <li><a class="dropdown-item" href="{% url 'spending_insights' %}">AI Spending Insights</a></li>
+                </ul>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn btn-info btn-sm fw-bold text-white dropdown-toggle sc-nav-button" type="button" data-bs-toggle="dropdown">
+                    Analytics
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{% url 'shopping_history' %}">Purchase History & Bills</a></li>
+                    <li><a class="dropdown-item" href="{% url 'bill_scanner' %}">OCR Digital Bill Scanner</a></li>
+                    <li><a class="dropdown-item" href="{% url 'spending_analytics' %}">Spending Analytics Dashboard</a></li>
+                </ul>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn btn-secondary btn-sm dropdown-toggle sc-nav-button" type="button" data-bs-toggle="dropdown">
+                    Tools
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{% url 'cart_comparison' %}">Compare Full Cart</a></li>
+                    <li><a class="dropdown-item" href="{% url 'price_comparison' %}">Item Price Check</a></li>
+                    <li><a class="dropdown-item" href="{% url 'barcode_scanner' %}">Barcode Scanner</a></li>
+                    <li><a class="dropdown-item" href="{% url 'store_locator' %}">Store Locator</a></li>
+                    <li><a class="dropdown-item" href="{% url 'list_management' %}">Shopping Lists</a></li>
+                </ul>
+            </div>
+
+            <a href="{% url 'store_selection' %}" class="btn btn-outline-light btn-sm">Store</a>
+            <a href="{% url 'store_dashboard' %}" class="btn btn-light btn-sm text-primary">Dashboard</a>
+            <a href="{% url 'view_cart' %}" class="btn btn-light btn-sm fw-bold">Cart</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'customer_profile' %}" class="btn btn-outline-light btn-sm">Profile</a>
+            {% endif %}
+            {% if user.is_staff %}
+                <a href="{% url 'admin:index' %}" class="btn btn-outline-light btn-sm">Admin</a>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post" class="d-inline ms-1">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>

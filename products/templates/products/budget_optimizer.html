@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Budget Optimizer - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 800px;">
+        <p class="sc-kicker">SPENDING CONTROL</p>
+        <h2 class="mb-3">SmartCart AI Budget Optimizer</h2>
+        <p class="text-muted">Analyze your active cart against your target spending limit to maximize savings.</p>
+
+        <form method="GET" class="card shadow-sm p-4 bg-white mb-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small">Target Budget (₹)</label>
+                    <input type="number" name="budget" class="form-control" value="{{ budget }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small">Current Cart Total (₹)</label>
+                    <input type="number" name="cart_total" class="form-control" value="{{ cart_total }}">
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary w-100" type="submit">Analyze Cart with AI</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card shadow-sm p-4 bg-white mb-4">
+            <div class="row text-center mb-4">
+                <div class="col">
+                    <span class="text-muted">Target Budget:</span>
+                    <h4>₹{{ budget|floatformat:2 }}</h4>
+                </div>
+                <div class="col">
+                    <span class="text-muted">Current Cart:</span>
+                    <h4 class="text-danger">₹{{ cart_total|floatformat:2 }}</h4>
+                </div>
+                <div class="col">
+                    <span class="text-muted">Optimized Total:</span>
+                    <h4 class="text-success">₹{{ new_total|floatformat:2 }}</h4>
+                </div>
+            </div>
+
+            <h5 class="text-primary mb-3">AI Recommendations:</h5>
+            <ul class="list-group mb-3">
+                {% for rec in recommendations %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ rec.action }}</span>
+                        <span class="badge bg-success fs-6">Save ₹{{ rec.saving|floatformat:0 }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="p-3 bg-light rounded border mb-3">
+                <div class="d-flex justify-content-between">
+                    <span>Potential Total Savings:</span>
+                    <strong class="text-success">₹{{ total_savings|floatformat:2 }}</strong>
+                </div>
+            </div>
+
+            <div class="alert alert-info mb-0" role="alert">
+                <strong>AI Assistant:</strong> {{ ai_message }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

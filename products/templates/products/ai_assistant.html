@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Budget Assistant - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 800px;">
+        <p class="sc-kicker">INTELLIGENCE WORKSPACE</p>
+        <h2 class="mb-3">SmartCart AI Budget Assistant</h2>
+        <p class="text-muted">Ask for meal suggestions within a specific budget for your gathering.</p>
+
+        <form method="GET" class="card shadow-sm p-4 bg-white mb-4">
+            <div class="row g-3">
+                <div class="col-md-9">
+                    <input type="text" name="prompt" class="form-control" placeholder="e.g., Suggest dinner for 4 people under ₹500" value="{{ prompt }}">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" type="submit">Get Suggestions</button>
+                </div>
+            </div>
+        </form>
+
+        {% if is_budget_query %}
+            <h4 class="mb-3">Budget Recipe Options (Under ₹{{ budget_limit|floatformat:0 }}):</h4>
+            <div class="row row-cols-1 g-3 mb-4">
+                {% for recipe in budget_recipes %}
+                    <div class="col">
+                        <div class="card shadow-sm bg-white">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title text-primary mb-1">{{ recipe.name }}</h5>
+                                    <p class="text-muted small mb-2">Estimated cost: <strong class="text-success">₹{{ recipe.estimated_cost|floatformat:2 }}</strong></p>
+                                    <div>
+                                        {% for ing in recipe.ingredients %}
+                                            <span class="badge bg-light text-dark border me-1">{{ ing }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="add_recipe_cart" value="{{ recipe.name }}">
+                                    <button type="submit" class="btn btn-success btn-sm">Add Ingredients to Shopping List</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-warning">No recipe suggestions found within your budget limit of ₹{{ budget_limit|floatformat:0 }}.</div>
+                {% endfor %}
+            </div>
+        {% elif prompt %}
+            <div class="card shadow-sm p-4 bg-white mb-4">
+                <h4 class="text-primary mb-3">Extracted Ingredients:</h4>
+                <ul class="list-group mb-3">
+                    {% for item in extracted_ingredients %}
+                        <li class="list-group-item">{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

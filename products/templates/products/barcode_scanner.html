@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Barcode Scanner - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 700px;">
+        <div class="d-flex align-items-center mb-3">
+            <span class="sc-kicker me-2">SCAN TOOL</span>
+            <div>
+                <h2 class="mb-0">Version 5.1 — Barcode Scanner</h2>
+                <p class="text-muted mb-0">Scan product barcodes to compare prices instantly across nearby stores.</p>
+            </div>
+        </div>
+
+        <form method="GET" class="card shadow-sm p-4 bg-white mb-4">
+            <label class="form-label text-muted small fw-bold">Scan or Enter Product Barcode / Keyword</label>
+            <div class="input-group">
+                <input type="text" name="barcode" class="form-control" placeholder="e.g., 8901058853102 or salt" value="{{ barcode }}">
+                <button class="btn btn-primary px-4" type="submit">Lookup Product</button>
+            </div>
+        </form>
+
+        {% if product_found %}
+            <div class="card shadow-sm p-4 bg-white border-start border-4 border-primary">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="text-primary mb-1">{{ product_found.name }}</h4>
+                        <p class="text-muted mb-0">Quantity: <strong>{{ product_found.quantity }}</strong></p>
+                    </div>
+                    <span class="badge bg-success fs-6">Live Match Found</span>
+                </div>
+
+                <h5 class="text-secondary mb-3 mt-3">Store Price Comparison:</h5>
+                <ul class="list-group mb-3">
+                    {% for comp in comparisons %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center {% if comp.best %}list-group-item-success{% endif %}">
+                            <span>
+                                <strong>{{ comp.store }}</strong>
+                                {% if comp.best %} <span class="badge bg-success ms-2">Cheapest 🏆</span>{% endif %}
+                            </span>
+                            <span class="fs-5 fw-bold">₹{{ comp.price|floatformat:2 }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="d-grid">
+                    <a href="{% url 'product_list' %}" class="btn btn-outline-primary">Add Cheapest to Cart</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

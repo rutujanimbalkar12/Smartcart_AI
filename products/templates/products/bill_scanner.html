@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digital Bill Scanner - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 700px;">
+        <p class="sc-kicker">DOCUMENT INTELLIGENCE</p>
+        <h2 class="mb-3">AI Digital Bill Scanner</h2>
+        <p class="text-muted">Upload a photo of your shopping receipt to automatically extract items and save your purchase records.</p>
+
+        {% if success_message %}
+            <div class="alert alert-success" role="alert">
+                {{ success_message }} <a href="{% url 'shopping_history' %}" class="alert-link">View in History</a>.
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="card shadow-sm p-4 bg-white mb-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="bill_image" class="form-label">Select Bill Image (JPG/PNG)</label>
+                <input class="form-control" type="file" id="bill_image" name="bill_image" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Scan Bill with AI OCR</button>
+        </form>
+
+        {% if scanned_data %}
+            <div class="card shadow-sm p-4 bg-white">
+                <h4 class="text-primary mb-3">🧾 OCR Extraction Results</h4>
+                <p class="text-muted mb-2">Detected Store: <strong>{{ scanned_data.store }}</strong></p>
+                
+                <ul class="list-group mb-3">
+                    {% for item in scanned_data.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ item.name }}</span>
+                            <span class="fw-bold">₹{{ item.price }}</span>
+                        </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                        <strong>Total</strong>
+                        <strong class="text-success fs-5">₹{{ scanned_data.total|floatformat:2 }}</strong>
+                    </li>
+                </ul>
+                <div class="alert alert-info mb-0 small">
+                    ✅ This bill has been automatically parsed and logged into your digital bills history.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

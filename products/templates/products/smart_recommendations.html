@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Recommendations - SmartCart AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/smartcart.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    {% include 'products/navbar.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container my-5" style="max-width: 800px;">
+        <div class="d-flex align-items-center mb-3">
+            <span class="sc-kicker me-2">AI SIGNALS</span>
+            <div>
+                <h2 class="mb-0">Version 5.2 — Smart Recommendations</h2>
+                <p class="text-muted mb-0">Personalized smart suggestions powered by your purchase habits and real-time store offers.</p>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 g-3">
+            {% for rec in recommendations %}
+                <div class="col">
+                    <div class="card shadow-sm bg-white border-start border-4 border-{{ rec.badge_color }}">
+                        <div class="card-body d-flex align-items-start">
+                            <span class="fs-3 me-3">{{ rec.icon }}</span>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h5 class="mb-0 text-dark">{{ rec.title }}</h5>
+                                    <span class="badge bg-{{ rec.badge_color }} text-dark bg-opacity-10 border border-{{ rec.badge_color }}">
+                                        Active Insight
+                                    </span>
+                                </div>
+                                <p class="mb-0 text-secondary fs-6">{{ rec.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

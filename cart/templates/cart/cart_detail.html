@@ -1,0 +1,15 @@
+<!-- Budget Alert Banner -->
+{% if alert_message %}
+    <div class="alert alert-{{ alert_class }} shadow-sm mb-4" role="alert">
+        <h5 class="alert-heading mb-1">{{ alert_message }}</h5>
+        {% if suggestions %}
+            <hr>
+            <p class="mb-2"><strong>Possible suggestions to get back on track:</strong></p>
+            <ul class="mb-0">
+                {% for sug in suggestions %}
+                    <li>{{ sug.action }} &mdash; <span class="text-success fw-bold">Save ₹{{ sug.savings }}</span></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endif %}
